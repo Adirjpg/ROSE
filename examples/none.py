@@ -1,6 +1,6 @@
 from rose.common import obstacles, actions
 
-driver_name = "mergez"
+driver_name = "zegrem"
 
 def safe_zone(world, x, y):
     """
@@ -15,10 +15,13 @@ def safe_zone(world, x, y):
         right_obstacle = world.get((x + 1, y))
     except IndexError:
         right_obstacle = obstacles.BARRIER  # Treat out of bounds as a barrier
-
-    if left_obstacle == obstacles.NONE:
+    
+    if left_obstacle in [obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER, obstacles.NONE] and right_obstacle in [obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER, obstacles.NONE]:
+        return find_penguin_route(world, x, y)
+    
+    if left_obstacle in [obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER, obstacles.NONE]:
         return actions.LEFT
-    elif right_obstacle == obstacles.NONE:
+    elif right_obstacle in [obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER, obstacles.NONE]:
         return actions.RIGHT
     else:
         # If both sides are not clear, choose an action based on the obstacle
@@ -32,28 +35,30 @@ def find_penguin_route(world, x, y):
     # Scan up to 5 positions ahead to find the nearest penguin or obstacles
     for i in range(1, 6):
         try:
-            forward_obstacle = world.get((x, y - i))
-            if forward_obstacle == obstacles.PENGUIN:
-                if not any(world.get((x, y - j)) in [obstacles.WATER, obstacles.CRACK, obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
-                    return actions.NONE  # Move forward if there's a penguin ahead with no blocking obstacles
-        except IndexError:
-            continue
-
-        try:
             left_obstacle = world.get((x - 1, y - i))
-            if left_obstacle == obstacles.PENGUIN:
-                if not any(world.get((x - 1, y - j)) in [obstacles.WATER, obstacles.CRACK, obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
+            if left_obstacle in [obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER]:
+                if not any(world.get((x - 1, y - j)) in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
                     return actions.LEFT  # Move left if there's a penguin ahead with no blocking obstacles
         except IndexError:
             continue
 
         try:
             right_obstacle = world.get((x + 1, y - i))
-            if right_obstacle == obstacles.PENGUIN:
-                if not any(world.get((x + 1, y - j)) in [obstacles.WATER, obstacles.CRACK, obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
+            if right_obstacle in [obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER]:
+                if not any(world.get((x + 1, y - j)) in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
                     return actions.RIGHT  # Move right if there's a penguin ahead with no blocking obstacles
         except IndexError:
             continue
+
+        try:
+            forward_obstacle = world.get((x, y - i))
+            if forward_obstacle in [obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER]:
+                if not any(world.get((x, y - j)) in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
+                    return actions.NONE  # Move forward if there's a penguin ahead with no blocking obstacles
+        except IndexError:
+            continue
+
+        
 
     return actions.NONE  # Default to moving forward if no penguins are found
 
