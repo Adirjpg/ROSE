@@ -2,6 +2,14 @@
 This driver does not do any action.
 """
 from rose.common import obstacles, actions  # NOQA
+def safe_zone(world):
+    x = world.car.x
+    y = world.car.y
+
+    if(world.get(x - 1, y) == obstacles.NONE):
+        return actions.LEFT
+    elif(world.get(x + 1, y) == obstacles.NONE):
+        return actions.RIGHT
 
 driver_name = "Negev Driver"
 
@@ -26,12 +34,8 @@ def drive(world):
         return actions.BRAKE  # Brake to avoid water
     elif obstacle == obstacles.CRACK:
         return actions.JUMP  # Jump over the crack
-    elif obstacle == obstacles.TRASH:
-        return actions.RIGHT  # Move right to avoid trash
-    elif obstacle == obstacles.BIKE:
-        return actions.LEFT  # Move left to avoid the bike
-    elif obstacle == obstacles.BARRIER:
-        return actions.RIGHT  # Move right to avoid the barrier
+    elif obstacle == obstacles.TRASH or obstacle == obstacles.BARRIER or obstacle == obstacles.BIKE:
+        return safe_zone(world)
     else:
         return actions.NONE  # Default action if obstacle is unknown
 
