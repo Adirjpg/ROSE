@@ -11,4 +11,5 @@ driver_name = "Random Driver"
 
 
 def drive(world):
+    print(world)
     return random.choice(actions.ALL)
