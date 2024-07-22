@@ -79,7 +79,7 @@ def find_penguin_route(world, x, y):
     for i in range(1, 6):
         try:
             left_obstacle = world.get((x - 1, y - i))
-            if left_obstacle == obstacles.PENGUIN:
+            if left_obstacle == obstacles.PENGUIN or left_obstacle in avoidable_obstacles: 
                 if not any(world.get((x - 1, y - j)) in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
                     return actions.LEFT  # Move left if there's a penguin ahead with no blocking obstacles
         except IndexError:
@@ -87,7 +87,7 @@ def find_penguin_route(world, x, y):
 
         try:
             right_obstacle = world.get((x + 1, y - i))
-            if right_obstacle == obstacles.PENGUIN:
+            if right_obstacle == obstacles.PENGUIN or right_obstacle in avoidable_obstacles:
                 if not any(world.get((x + 1, y - j)) in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
                     return actions.RIGHT  # Move right if there's a penguin ahead with no blocking obstacles
         except IndexError:
