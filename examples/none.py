@@ -8,6 +8,10 @@ prioQ = queue.Queue
 def qInit(world, x, y, q: queue, rec_loop=5):
     pass  # Implementation needed based on game logic
 
+def check_q(q:queue):
+    if q.Empty():
+        qInit()
+
 def avoid(obstacle):
     """
     Define actions to avoid specific obstacles.
