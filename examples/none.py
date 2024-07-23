@@ -1,7 +1,12 @@
 from rose.common import obstacles, actions
+import queue
 
 driver_name = "bengervir"
 avoidable_obstacles = [obstacles.CRACK, obstacles.WATER]
+
+def check_q(q:queue):
+    if q.Empty():
+        qInit()
 
 def avoid(obstacle):
     if obstacle == obstacles.WATER:

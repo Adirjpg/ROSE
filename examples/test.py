@@ -1,76 +1,89 @@
 from rose.common import obstacles, actions
-import heapq
 
-driver_name = "Michael Schumacher"
+driver_name = "mergez"
 
-def get_points(obstacle):
-    if obstacle == obstacles.NONE:
-        return 10
-    elif obstacle == obstacles.PENGUIN:
-        return 20
-    elif obstacle == obstacles.WATER:
-        return 4
-    elif obstacle == obstacles.CRACK:
-        return 5
+def safe_zone(world, x, y):
+    """
+    Check both left and right sides to find a clear path.
+    """
+    try:
+        left_obstacle = world.get((x - 1, y))
+    except IndexError:
+        left_obstacle = obstacles.BARRIER  # Treat out of bounds as a barrier
+
+    try:
+        right_obstacle = world.get((x + 1, y))
+    except IndexError:
+        right_obstacle = obstacles.BARRIER  # Treat out of bounds as a barrier
+
+    if left_obstacle == obstacles.NONE:
+        return actions.LEFT
+    elif right_obstacle == obstacles.NONE:
+        return actions.RIGHT
     else:
-        return -10
+        # If both sides are not clear, choose an action based on the obstacle
+        return actions.RIGHT if right_obstacle != obstacles.BARRIER else actions.LEFT
 
-def get_neighbors(pos, width):
-    x, y = pos
-    neighbors = []
-    if x > 0:
-        neighbors.append((x - 1, y - 1, actions.LEFT))
-    if x < width - 1:
-        neighbors.append((x + 1, y - 1, actions.RIGHT))
-    neighbors.append((x, y - 1, actions.NONE))
-    return neighbors
-
-def heuristic(pos):
-    x, y = pos
-    return y
-
-def a_star(start, world):
-    width = world.width
-    open_set = []
-    heapq.heappush(open_set, (0, start, [], 0))
-    came_from = {}
-    g_score = {start: 0}
-    f_score = {start: heuristic(start)}
-
-    while open_set:
-        _, current, path, current_points = heapq.heappop(open_set)
-
-        if current[1] == 0:
-            return path, current_points
-
-        for neighbor in get_neighbors(current, width):
-            x, y, action = neighbor
-            if y < 0 or x < 0 or x >= width:
-                continue
-
+def find_penguin_route(world, x, y):
+    """
+    Scan the upcoming positions to locate penguins and prioritize driving towards them,
+    but also consider obstacles.
+    """
+    # Scan up to 5 positions ahead to find the nearest penguin or obstacles
+    for side in range(1, 3):
+        for i in range(1, 6):
             try:
-                obstacle = world.get((x, y))
+                forward_obstacle = world.get((x, y - i))
+                if forward_obstacle == obstacles.PENGUIN:
+                    if not any(world.get((x, y - j)) in [obstacles.WATER, obstacles.CRACK, obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
+                        return actions.NONE  # Move forward if there's a penguin ahead with no blocking obstacles
             except IndexError:
                 continue
 
-            tentative_g_score = g_score[current] + 1
-            tentative_points = current_points + get_points(obstacle)
+            try:
+                left_obstacle = world.get((x - side,  y - i))
+                if left_obstacle == obstacles.PENGUIN:
+                    if not any(world.get((x - 1, y - j)) in [obstacles.WATER, obstacles.CRACK, obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
+                        return actions.LEFT  # Move left if there's a penguin ahead with no blocking obstacles
+            except IndexError:
+                continue
 
-            if (x, y) not in g_score or tentative_g_score < g_score[(x, y)]:
-                came_from[(x, y)] = (current, action)
-                g_score[(x, y)] = tentative_g_score
-                f_score[(x, y)] = tentative_g_score + heuristic((x, y))
-                heapq.heappush(open_set, (f_score[(x, y)], (x, y), path + [action], tentative_points))
+            try:
+                right_obstacle = world.get((x + side, y - i))
+                if right_obstacle == obstacles.PENGUIN:
+                    if not any(world.get((x + 1, y - j)) in [obstacles.WATER, obstacles.CRACK, obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
+                        return actions.RIGHT  # Move right if there's a penguin ahead with no blocking obstacles
+            except IndexError:
+                continue
 
-    return [], 0
+    return actions.NONE  # Default to moving forward if no penguins are found
 
 def drive(world):
     x = world.car.x
     y = world.car.y
-    start = (x, y)
-    path, points = a_star(start, world)
 
-    if path:
-        return path[0]
-    else:
+    # Move to the next position
+    next_position = (x, y - 1)
+    
+    try:
+        obstacle = world.get(next_position)
+    except IndexError:
+        # If the next position is out of the track, do nothing
         return actions.NONE
+    
+    if obstacle == obstacles.NONE:
+        # Check if there is a penguin route if no immediate obstacle
+        penguin_action = find_penguin_route(world, x, y)
+        if penguin_action != actions.NONE:
+            return penguin_action
+        return actions.NONE  # No obstacle, continue moving forward
+    elif obstacle == obstacles.PENGUIN:
+        return actions.PICKUP  # Pick up the penguin and move forward
+    elif obstacle == obstacles.WATER:
+        return actions.BRAKE  # Brake to avoid water
+    elif obstacle == obstacles.CRACK:
+        return actions.JUMP  # Jump over the crack
+    elif obstacle in (obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER):
+        return safe_zone(world, x, y - 1)  # Check for a safe zone to turn
+    else:
+        return actions.NONE  # Default action if obstacle is unknown
