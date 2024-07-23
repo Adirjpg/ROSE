@@ -1,18 +1,17 @@
 from rose.common import obstacles, actions
 
 driver_name = "mergez"
-
 def safe_zone(world, x, y):
     """
     Check both left and right sides to find a clear path.
     """
     try:
-        left_obstacle = world.get((x - 1, y))
+        left_obstacle = world.get((x - 1, y - 1))
     except IndexError:
         left_obstacle = obstacles.BARRIER  # Treat out of bounds as a barrier
 
     try:
-        right_obstacle = world.get((x + 1, y))
+        right_obstacle = world.get((x + 1, y - 1))
     except IndexError:
         right_obstacle = obstacles.BARRIER  # Treat out of bounds as a barrier
 
@@ -21,8 +20,8 @@ def safe_zone(world, x, y):
     elif right_obstacle == obstacles.NONE:
         return actions.RIGHT
     else:
-        # If both sides are not clear, choose an action based on the obstacle
         return actions.RIGHT if right_obstacle != obstacles.BARRIER else actions.LEFT
+
 
 def find_penguin_route(world, x, y):
     """
