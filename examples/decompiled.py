@@ -1,0 +1,78 @@
+# uncompyle6 version 3.9.2
+# Python bytecode version base 3.7.0 (3394)
+# Decompiled from: Python 3.8.5 (tags/v3.8.5:580fbb0, Jul 20 2020, 15:43:08) [MSC v.1926 32 bit (Intel)]
+# Embedded file name: best_driver.py
+# Compiled at: 2020-12-21 10:15:21
+# Size of source mod 2**32: 2685 bytes
+from rose.common import obstacles, actions
+driver_name = "Best"
+
+def return_direction_when_barrier(x, y, world):
+    if x == 0 or x == 3:
+        return actions.RIGHT
+    if x == 2 or x == 5:
+        return actions.LEFT
+    rightobstacle = world.get((x + 1, y - 2))
+    leftobstacle = world.get((x - 1, y - 2))
+    if rightobstacle == obstacles.PENGUIN:
+        return actions.RIGHT
+    if leftobstacle == obstacles.PENGUIN:
+        return actions.LEFT
+    if rightobstacle == obstacles.CRACK:
+        return actions.RIGHT
+    if leftobstacle == obstacles.CRACK:
+        return actions.LEFT
+    if rightobstacle == obstacles.WATER:
+        return actions.RIGHT
+    if leftobstacle == obstacles.WATER:
+        return actions.LEFT
+    return actions.LEFT
+
+
+def find_place_none(x, y, world):
+    if x == 0 or x == 3:
+        rightobstacle = world.get((x + 1, y - 2))
+        if rightobstacle == obstacles.PENGUIN or rightobstacle == obstacles.CRACK or rightobstacle == obstacles.WATER:
+            return actions.RIGHT
+        return actions.NONE
+    else:
+        if x == 2 or x == 5:
+            leftobstacle = world.get((x - 1, y - 2))
+            if leftobstacle == obstacles.PENGUIN or leftobstacle == obstacles.CRACK or leftobstacle == obstacles.WATER:
+                return actions.LEFT
+            return actions.NONE
+        else:
+            rightobstacle = world.get((x + 1, y - 2))
+            leftobstacle = world.get((x - 1, y - 2))
+            if rightobstacle == obstacles.PENGUIN:
+                return actions.RIGHT
+            if leftobstacle == obstacles.PENGUIN:
+                return actions.LEFT
+            if rightobstacle == obstacles.CRACK:
+                return actions.RIGHT
+            if leftobstacle == obstacles.CRACK:
+                return actions.LEFT
+            if rightobstacle == obstacles.WATER:
+                return actions.RIGHT
+            if leftobstacle == obstacles.WATER:
+                return actions.LEFT
+            return actions.NONE
+
+
+def drive(world):
+    x = world.car.x
+    y = world.car.y
+    obstacle = world.get((x, y - 1))
+    if obstacle == obstacles.PENGUIN:
+        return actions.PICKUP
+    if obstacle == obstacles.WATER:
+        return actions.BRAKE
+    if obstacle == obstacles.CRACK:
+        return actions.JUMP
+    if obstacle == obstacles.TRASH or obstacle == obstacles.BIKE or obstacle == obstacles.BARRIER:
+        return return_direction_when_barrier(x, y, world)
+    if obstacle == obstacles.NONE:
+        return find_place_none(x, y, world)
+    return actions.NONE
+
+# okay decompiling best_driver.pyc
