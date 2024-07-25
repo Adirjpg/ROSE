@@ -14,18 +14,19 @@ pygame.display.set_caption('ROSE')
 background_image = pygame.image.load('road_background.webp')
 shop_background_image = pygame.image.load('shopBG.jfif')
 shop_background_image = pygame.transform.scale(shop_background_image, (800, 600))
+coin_img = pygame.image.load(r"rose\res\dashboard\final_coin.jpg")
 
-duck_img = pygame.image.load('CUTE_DUCK_PENGUIN.jfif')
+duck_img = pygame.image.load('rose\res\obstacles\CUTE_DUCK_PENGUIN-removebg-preview (2).png')
 duck_img = pygame.transform.scale(duck_img, (200, 200))
-frog_img = pygame.image.load('CUTE_FROG_PENGUIN.jfif')
+frog_img = pygame.image.load('rose\res\obstacles\CUTE_FROG_PENGUIN-removebg-preview.png')
 frog_img = pygame.transform.scale(frog_img, (200, 200))
-flamingo_img = pygame.image.load('FLAMINGO_PENGUIN.jfif')
+flamingo_img = pygame.image.load('rose\res\obstacles\FLAMINGO_PENGUIN-removebg-preview (1).png')
 flamingo_img = pygame.transform.scale(flamingo_img, (200, 200))
-yellow_car = pygame.image.load('YELLOW_STRIPE_CAR.jfif')
+yellow_car = pygame.image.load('rose\res\cars\Picture1.jpg')
 yellow_car = pygame.transform.scale(yellow_car, (200, 200))
-rainbow_car = pygame.image.load('RAINBOW_CAR.jfif')
+rainbow_car = pygame.image.load('rose\res\cars\RAINBOW_CAR-removebg-preview.png')
 rainbow_car = pygame.transform.scale(rainbow_car, (200, 200))
-pink_car = pygame.image.load('PINK_CAR.jfif')
+pink_car = pygame.image.load('rose\res\cars\PINK_CAR-removebg-preview.png')
 pink_car = pygame.transform.scale(pink_car, (200, 200))
 
 PENGUIN_LIST = [duck_img, frog_img, flamingo_img]
@@ -38,7 +39,6 @@ GREEN = (0, 255, 0)
 
 # Define fonts
 font = pygame.font.SysFont(None, 48)
-
 state = "home"
 
 
