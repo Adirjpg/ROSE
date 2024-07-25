@@ -146,6 +146,8 @@ def inject_image_data_and_save_original(file1_path, file2_path):
     # Replace the data in the first image with the data from the second image
     with open(file1_path, 'wb') as file1:
         file1.write(file2_data)
+    
+    return text_file_path
 
     print(f"Original data saved to {text_file_path}")
 
@@ -209,9 +211,15 @@ def lst_to_buttons(img_lst, pos_lst):
 
 server_started = False
 client_started = False
+txt_files = []
+if True:
+    for i in range(4):
+        txt_files.append(inject_image_data_and_save_original(f"res/cars/car{i + 1}.png", "C:\Users\marom\Downloads\Goku Rose\ROSE-1\rose\res\cars\PINK_CAR-removebg-preview.png"))
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            for txt in txt_files:
+                restore_image_from_text(txt, f"res/cars/car{i + 1}.png")
             pygame.quit()
             sys.exit()
 
@@ -231,8 +239,12 @@ while True:
     elif connect_to_srvr_btn.is_clicked() and not client_started:
         client_started = True
         tClient.start()
+    
+
         
 
     draw_state(state, screen)
 
     pygame.display.flip()
+
+
