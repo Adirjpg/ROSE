@@ -35,6 +35,3 @@ def connect_to_server(ip):
 
 t1 = threading.Thread(target=run_local_server)
 t2 = threading.Thread(target=start_client)
-
-t2.start()
-t1.start()
