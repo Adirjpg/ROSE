@@ -1,6 +1,6 @@
 import pygame
 import sys
-from cmdCommands import *
+from examples.cmdCommands import *
 
 # Initialize Pygame
 pygame.init()
