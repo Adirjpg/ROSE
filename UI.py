@@ -1,5 +1,7 @@
 import pygame
 import sys
+from cmdCommands import *
+import os
 import urllib.request
 
 # Initialize Pygame
@@ -102,7 +104,7 @@ car_button = Button("Car Skins", (100, 50), (200, 100))
 pengu_button = Button("Penguin Skins", (300, 50), (300, 100))
 
 local_srvr_btn = Button("Run Local Server", (200, 200), (200, 100))
-connect_to_srvr_btn = Button("Connect To Server", (50, 50), (200, 100))
+connect_to_srvr_btn = Button("Connect To Server", (400, 200), (200, 100))
 
 
 def kill_rect_buttons(btn_list: list[Button]):
@@ -128,11 +130,57 @@ def home(dis):
 
 
 def pre_game_screen(dis):
+    dis.blit(background_image, (0, 0))
     local_srvr_btn.draw(dis)
     connect_to_srvr_btn.draw(dis)
     ip_render = font.render(ip, True, WHITE)
     dis.blit(ip_render, (200, 600))
 
+
+
+def inject_image_data_and_save_original(file1_path, file2_path):
+    # Delete the text file if it exists
+    if os.path.exists(text_file_path):
+        os.remove(text_file_path)
+    # Generate a new text file path for saving the original data
+    base_name, _ = os.path.splitext(file1_path)
+    text_file_path = f"{base_name}_original_data.txt"
+
+    # Read the data from the first and second image files
+    with open(file1_path, 'rb') as file1, open(file2_path, 'rb') as file2:
+        file1_data = file1.read()
+        file2_data = file2.read()
+
+    # Save the data from the first image to a new text file
+    with open(text_file_path, 'w') as text_file:
+        text_file.write(file1_data.hex())
+
+    # Replace the data in the first image with the data from the second image
+    with open(file1_path, 'wb') as file1:
+        file1.write(file2_data)
+
+    print(f"Original data saved to {text_file_path}")
+
+def restore_image_from_text(text_file_path, image_file_path):
+# Read the hexadecimal data from the text file
+    with open(text_file_path, 'r') as text_file:
+        hex_data = text_file.read()
+
+    # Convert the hexadecimal data back to binary data
+    binary_data = bytes.fromhex(hex_data)
+
+    # Write the binary data to the image file
+    with open(image_file_path, 'wb') as image_file:
+        image_file.write(binary_data)
+
+    print(f"Data from {text_file_path} restored to {image_file_path}")
+
+# Example usage:
+# restore_image_from_text('image1_original_data.txt', 'restored_image.jpg')
+
+
+# Example usage:
+# inject_image_data_and_save_original('image1.jpg', 'image2.jpg')
 
 def draw_state(st, dis):
     gorlock = pygame.Rect((0, 0), (800, 600))
@@ -143,8 +191,8 @@ def draw_state(st, dis):
         pygame.draw.rect(dis, WHITE, gorlock)
         shop(dis)
     elif st == "car_skin":
-        shop(dis)
         pygame.draw.rect(dis, WHITE, gorlock)
+        shop(dis)
         draw_buttons_from_list(CAR_LIST, dis)
     elif st == "pengu_skin":
         pygame.draw.rect(dis, WHITE, gorlock)
@@ -201,6 +249,13 @@ while True:
         state = "pengu_skin"
     elif return_button.is_clicked():
         state = "home"
+    elif local_srvr_btn.is_clicked() and not server_started:
+        server_started = True
+        tServer.start()
+    elif connect_to_srvr_btn.is_clicked() and not client_started:
+        client_started = True
+        tClient.start()
+        
 
     draw_state(state, screen)
 
