@@ -39,7 +39,7 @@ BLUE = (0, 0, 0)
 GREEN = (0, 255, 0)
 
 # Define fonts
-font = pygame.font.SysFont(None, 48)
+font = pygame.font.SysFont(None, 20)
 state = "home"
 
 
@@ -94,10 +94,14 @@ shop_button_image = pygame.transform.scale(shop_button_image, (200, 100))
 shop_button = Button("Shop", (650, 50), (100, 100), shop_button_image)
 
 car_button = Button("Car Skins", (100, 50), (200, 100))
-pengu_button = Button("Penguin Skins", (450, 50), (300, 100))
+pengu_button = Button("Penguin Skins", (300, 50), (300, 100))
 
-local_srvr_btn = Button("Run Local Server", (200, 200), (200, 50))
-connect_to_srvr_btn = Button("Connect To Server", (400, 200), (200, 50))
+local_srvr_btn = Button("Run Local Server", (200, 200), (200, 100))
+connect_to_srvr_btn = Button("Connect To Server", (50, 50), (200, 100))
+
+def kill_rect_buttons(btn_list:list[Button]):
+    for btn in btn_list:
+        btn.rect.topleft = ()
 
 def shop(dis):
     dis.blit(shop_background_image, (0, 0))
@@ -122,8 +126,10 @@ def draw_state(st, dis):
     elif st == "shop":
         shop(dis)
     elif st == "car_skin":
+        shop(dis)
         draw_buttons_from_list(CAR_LIST, dis)
     elif st == "pengu_skin":
+        shop(dis)
         draw_buttons_from_list(PENGUIN_LIST, dis)
     elif st == "game":
         pre_game_screen(dis)
@@ -145,7 +151,8 @@ def lst_to_buttons(img_lst, pos_lst):
         btn_lst.append(btn)
     return btn_lst
 
-
+server_started = False
+client_started = False
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -160,6 +167,14 @@ while True:
         state = "car_skin"
     elif pengu_button.is_clicked():
         state = "pengu_skin"
+    elif local_srvr_btn.is_clicked() and not server_started:
+        print("server")
+        tServer.start()
+        server_started = True
+    elif connect_to_srvr_btn.is_clicked() and not client_started:
+        print("client")
+        tClient.start()
+        client_started = True
 
     draw_state(state, screen)
 
