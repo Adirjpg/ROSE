@@ -3,49 +3,55 @@ import queue
 
 driver_name = "bengervir"
 avoidable_obstacles = [obstacles.CRACK, obstacles.WATER]
+prioQ = queue.Queue
+
+def qInit(world, x, y, q: queue, rec_loop=5):
+    pass  # Implementation needed based on game logic
 
 def check_q(q:queue):
     if q.Empty():
         qInit()
 
 def avoid(obstacle):
+    """
+    Define actions to avoid specific obstacles.
+    """
     if obstacle == obstacles.WATER:
         return actions.BRAKE
-    return actions.JUMP
-
+    elif obstacle == obstacles.CRACK:
+        return actions.JUMP
+    else:
+        return actions.NONE
 
 def penguiner(world, x, y):
     """
-    Checking both left and right lanes to find the closest penguin.
+    Check both left and right lanes to find the closest penguin.
     """
-    left_penguin = 0
-    right_penguin = 0
-
-    left_flag = False
-    right_flag = False
+    left_penguin, right_penguin = float('inf'), float('inf')
 
     for i in range(1, 6):
-        try:# Locating the closest penguin in the left lane
+        try:
             left_obstacle = world.get((x - 1, y - i))
+            if left_obstacle == obstacles.PENGUIN:
+                left_penguin = i
+                break
         except IndexError:
-            left_obstacle = obstacles.BARRIER  # Treat out of bounds as a barrier
-        if left_obstacle in [obstacles.CRACK, obstacles.PENGUIN, obstacles.WATER] and not left_flag:
-            left_penguin = i
-            left_flag = True
-            
-        try:# Locating the closest penguin in the right lane
-            right_obstacle = world.get((x + 1, y - i))
-        except IndexError:
-            right_obstacle = obstacles.BARRIER  # Treat out of bounds as a barrier
-        if right_obstacle in [obstacles.CRACK, obstacles.PENGUIN, obstacles.WATER] and not right_flag:
-            right_penguin = i
-            right_flag = True
-            
-    
-    if left_penguin < right_penguin:# Shifting the car based on the lane with the closest penguin
-        return actions.LEFT
-    return actions.RIGHT
+            pass
 
+        try:
+            right_obstacle = world.get((x + 1, y - i))
+            if right_obstacle == obstacles.PENGUIN:
+                right_penguin = i
+                break
+        except IndexError:
+            pass
+
+    if left_penguin < right_penguin:
+        return actions.LEFT
+    elif right_penguin < left_penguin:
+        return actions.RIGHT
+    else:
+        return actions.NONE
 
 def safe_zone(world, x, y):
     """
@@ -54,73 +60,67 @@ def safe_zone(world, x, y):
     try:
         left_obstacle = world.get((x - 1, y))
     except IndexError:
-        left_obstacle = obstacles.BARRIER  # Treat out of bounds as a barrier
+        left_obstacle = obstacles.BARRIER
 
     try:
         right_obstacle = world.get((x + 1, y))
     except IndexError:
-        right_obstacle = obstacles.BARRIER  # Treat out of bounds as a barrier
-    
-    if left_obstacle in [obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER] and right_obstacle in [obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER]:
-        return find_penguin_route(world, x, y + 1)
-    
-    if left_obstacle == right_obstacle == obstacles.NONE:# If both sides are completly clear
+        right_obstacle = obstacles.BARRIER
+
+    if left_obstacle in [obstacles.NONE, obstacles.PENGUIN] and right_obstacle in [obstacles.NONE, obstacles.PENGUIN]:
         return penguiner(world, x, y)
-    
-    if left_obstacle in [obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER, obstacles.NONE]:
+
+    if left_obstacle in [obstacles.NONE, obstacles.PENGUIN]:
         return actions.LEFT
-    elif right_obstacle in [obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER, obstacles.NONE]:
+    elif right_obstacle in [obstacles.NONE, obstacles.PENGUIN]:
         return actions.RIGHT
     else:
         return actions.NONE
-
 
 def find_penguin_route(world, x, y):
     """
     Scan the upcoming positions to locate penguins and prioritize driving towards them,
     but also consider obstacles.
     """
-    # Scan up to 5 positions ahead to find the nearest penguin or obstacles
     for i in range(1, 6):
         try:
             left_obstacle = world.get((x - 1, y - i))
-            if left_obstacle == obstacles.PENGUIN or left_obstacle in avoidable_obstacles: 
-                if not any(world.get((x - 1, y - j)) in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
-                    return actions.LEFT  # Move left if there's a penguin ahead with no blocking obstacles
+            if left_obstacle == obstacles.PENGUIN or left_obstacle in avoidable_obstacles:
+                if all(world.get((x - 1, y - j)) not in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
+                    return actions.LEFT
         except IndexError:
-            continue
+            pass
 
         try:
             right_obstacle = world.get((x + 1, y - i))
             if right_obstacle == obstacles.PENGUIN or right_obstacle in avoidable_obstacles:
-                if not any(world.get((x + 1, y - j)) in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
-                    return actions.RIGHT  # Move right if there's a penguin ahead with no blocking obstacles
+                if all(world.get((x + 1, y - j)) not in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
+                    return actions.RIGHT
         except IndexError:
-            continue
+            pass
 
-    return actions.NONE  # Default to moving forward if no penguins are found
-
+    return actions.NONE
 
 def drive(world):
-    x = world.car.x
-    y = world.car.y
+    """
+    Main driving logic to navigate the car.
+    """
+    x, y = world.car.x, world.car.y
 
-    # Move to the next position
     next_position = (x, y - 1)
     
     try:
         obstacle = world.get(next_position)
     except IndexError:
-        # If the next position is out of the track, do nothing
         return actions.NONE
 
     if obstacle == obstacles.NONE:
         return find_penguin_route(world, x, y)
     elif obstacle == obstacles.PENGUIN:
-        return actions.PICKUP  # Pick up the penguin and move forward
+        return actions.PICKUP
     elif obstacle in avoidable_obstacles:
-        return avoid(obstacle)# Avoid the obstacle based on it's type
+        return avoid(obstacle)
     elif obstacle in (obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER):
-        return safe_zone(world, x, y - 1)  # Check for a safe zone to turn
+        return safe_zone(world, x, y - 1)
     else:
-        return actions.NONE  # Default action if obstacle is unknown
+        return actions.NONE

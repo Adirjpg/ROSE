@@ -30,6 +30,7 @@ class Player(object):
         self.action = None
         self.response_time = None
         self.score = None
+        self.coins = 0
         self.reset()
 
     # Game state interface
@@ -65,4 +66,5 @@ class Player(object):
             "y": self.y,
             "lane": self.lane,
             "score": self.score,
+            "coins": self.coins
         }

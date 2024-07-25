@@ -27,6 +27,7 @@ class Game(object):
         self._rate = config.game_rate
         self.started = False
         self.timeleft = config.game_duration
+        self.game_counter = 0
 
     @property
     def rate(self):
@@ -60,6 +61,17 @@ class Game(object):
             raise error.GameNotStarted()
         self.looper.stop()
         self.started = False
+        max = 0
+        if self.game_counter >= 3:
+            self.game_counter = 0
+            for p in self.players.values():
+                p["coins"] = 0
+        for p in self.players.values():
+            max = p["score"] if p["score"] > max else max
+        for p in self.players.values():
+            if p["score"] == max:
+                p["coins"] += 1
+                
         self.update_clients()
         self.print_stats()
 
