@@ -1,7 +1,5 @@
 from rose.common import obstacles, actions
-
-driver_name = "benger"
-
+driver_name = "mergez"
 def safe_zone(world, x, y):
     """
     Check both left and right sides to find a clear path.
@@ -44,7 +42,10 @@ def find_penguin_route(world, x, y):
                 left_obstacle = world.get((x - side,  y - i))
                 if left_obstacle == obstacles.PENGUIN:
                     if not any(world.get((x - 1, y - j)) in [obstacles.WATER, obstacles.CRACK, obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
-                        return actions.LEFT  # Move left if there's a penguin ahead with no blocking obstacles
+                        if x % 3 != 0:
+                            return actions.LEFT  # Move left if there's a penguin ahead with no blocking obstacles
+                        else:
+                            actions.RIGHT
             except IndexError:
                 continue
 
@@ -52,47 +53,14 @@ def find_penguin_route(world, x, y):
                 right_obstacle = world.get((x + side, y - i))
                 if right_obstacle == obstacles.PENGUIN:
                     if not any(world.get((x + 1, y - j)) in [obstacles.WATER, obstacles.CRACK, obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
-                        return actions.RIGHT  # Move right if there's a penguin ahead with no blocking obstacles
-            except IndexError:
-                continue
-    
-
-    return find_water_crack(world, x, y)  # Default to moving forward if no penguins are found
-
-def find_water_crack(world, x, y):
-    """
-    Scan the upcoming positions to locate penguins and prioritize driving towards them,
-    but also consider obstacles.
-    """
-    # Scan up to 5 positions ahead to find the nearest penguin or obstacles
-    for side in range(1, 3):
-        for i in range(1, 6):
-            try:
-                forward_obstacle = world.get((x, y - i))
-                if forward_obstacle in [obstacles.WATER, obstacles.CRACK]:
-                    if not any(world.get((x, y - j)) in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
-                        return actions.NONE  # Move forward if there's a penguin ahead with no blocking obstacles
+                        if (x + 1) % 3 != 0:
+                            return actions.RIGHT  # Move right if there's a penguin ahead with no blocking obstacles
+                        else:
+                            actions.LEFT
             except IndexError:
                 continue
 
-            try:
-                left_obstacle = world.get((x - side,  y - i))
-                if left_obstacle in [obstacles.WATER, obstacles.CRACK]:
-                    if not any(world.get((x - 1, y - j)) in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
-                        return actions.LEFT  # Move left if there's a penguin ahead with no blocking obstacles
-            except IndexError:
-                continue
-
-            try:
-                right_obstacle = world.get((x + side, y - i))
-                if right_obstacle in [obstacles.WATER, obstacles.CRACK]:
-                    if not any(world.get((x + 1, y - j)) in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER] for j in range(1, i)):
-                        return actions.RIGHT  # Move right if there's a penguin ahead with no blocking obstacles
-            except IndexError:
-                continue
-
-
-    return actions.NONE
+    return actions.NONE  # Default to moving forward if no penguins are found
 
 def drive(world):
     x = world.car.x
