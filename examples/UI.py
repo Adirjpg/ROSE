@@ -12,22 +12,22 @@ screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption('ROSE')
 
 # Load images
-background_image = pygame.image.load(r'rose\res\bg\road_background.webp')
-shop_background_image = pygame.image.load(r'rose\res\bg\shopBG.jfif')
+background_image = pygame.image.load(r'ROSE-1\rose\res\bg\road_background.webp')
+shop_background_image = pygame.image.load(r'ROSE-1\rose\res\bg\shopBG.jfif')
 shop_background_image = pygame.transform.scale(shop_background_image, (800, 600))
-coin_img = pygame.image.load(r"rose\res\dashboard\final_coin.jpg")
+coin_img = pygame.image.load(r"ROSE-1\rose\res\dashboard\final_coin.jpg")
 
-duck_img = pygame.image.load(r'rose\res\obstacles\CUTE_DUCK_PENGUIN-removebg-preview (2).png')
+duck_img = pygame.image.load(r'ROSE-1\rose\res\obstacles\CUTE_DUCK_PENGUIN-removebg-preview (2).png')
 duck_img = pygame.transform.scale(duck_img, (200, 200))
-frog_img = pygame.image.load(r'rose\res\obstacles\CUTE_FROG_PENGUIN-removebg-preview.png')
+frog_img = pygame.image.load(r'ROSE-1\rose\res\obstacles\CUTE_FROG_PENGUIN-removebg-preview.png')
 frog_img = pygame.transform.scale(frog_img, (200, 200))
-flamingo_img = pygame.image.load(r'rose\res\obstacles\FLAMINGO_PENGUIN-removebg-preview (1).png')
+flamingo_img = pygame.image.load(r'ROSE-1\rose\res\obstacles\FLAMINGO_PENGUIN-removebg-preview (1).png')
 flamingo_img = pygame.transform.scale(flamingo_img, (200, 200))
-yellow_car = pygame.image.load(r'rose\res\cars\Picture1.jpg')
+yellow_car = pygame.image.load(r'ROSE-1\rose\res\cars\Picture1.jpg')
 yellow_car = pygame.transform.scale(yellow_car, (200, 200))
-rainbow_car = pygame.image.load(r'rose\res\cars\RAINBOW_CAR-removebg-preview.png')
+rainbow_car = pygame.image.load(r'ROSE-1\rose\res\cars\RAINBOW_CAR-removebg-preview.png')
 rainbow_car = pygame.transform.scale(rainbow_car, (200, 200))
-pink_car = pygame.image.load(r'rose\res\cars\PINK_CAR-removebg-preview.png')
+pink_car = pygame.image.load(r'ROSE-1\rose\res\cars\PINK_CAR-removebg-preview.png')
 pink_car = pygame.transform.scale(pink_car, (200, 200))
 
 PENGUIN_LIST = [duck_img, frog_img, flamingo_img]
@@ -89,7 +89,7 @@ class ImageButton:
 
 
 game_button = Button("Play Game", (300, 300), (200, 100))
-shop_button_image = pygame.image.load('good_shop.jpg')
+shop_button_image = pygame.image.load(r'ROSE-1\rose\res\bg\good_shop.jpg')
 shop_button_image = pygame.transform.scale(shop_button_image, (200, 100))
 shop_button = Button("Shop", (650, 50), (100, 100), shop_button_image)
 
