@@ -22,7 +22,7 @@ def start_client():
         raise Exception("No value in path")
     return subprocess.run(commands[0], shell=True, check=True, text=True)
 
-def connect_to_server(ip): 
+def connect_to_server(ip = "127.0.0.1"): 
     path = os.getenv("SERVER_PATH")
     # List of commands to run
     commands = [
@@ -34,4 +34,8 @@ def connect_to_server(ip):
         process = subprocess.run(cmd, shell=True, check=True, text=True)
 
 tServer = threading.Thread(target=run_local_server)
-tClient = threading.Thread(target=start_client)
+
+
+def init_client(ip = "127.0.0.7"):
+    tClient = threading.Thread(target=connect_to_server, args=ip)
+    return tClient

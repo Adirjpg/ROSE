@@ -2,12 +2,15 @@ import pygame
 import sys
 from cmdCommands import *
 import os
+import urllib.request
+
 # Initialize Pygame
 pygame.init()
 
 # Set the dimensions of the window
 screen = pygame.display.set_mode((800, 600))
 
+ip = ""
 # Set the title of the window
 pygame.display.set_caption('ROSE')
 
@@ -17,15 +20,19 @@ shop_background_image = pygame.image.load(r'C:\Users\marom\Downloads\Goku Rose\R
 shop_background_image = pygame.transform.scale(shop_background_image, (800, 600))
 coin_img = pygame.image.load(r"C:\Users\marom\Downloads\Goku Rose\ROSE-1\rose\res\dashboard\final_coin.jpg")
 
-duck_img = pygame.image.load(r'C:\Users\marom\Downloads\Goku Rose\ROSE-1\rose\res\obstacles\CUTE_DUCK_PENGUIN-removebg-preview (2).png')
+duck_img = pygame.image.load(
+    r'C:\Users\marom\Downloads\Goku Rose\ROSE-1\rose\res\obstacles\CUTE_DUCK_PENGUIN-removebg-preview (2).png')
 duck_img = pygame.transform.scale(duck_img, (200, 200))
-frog_img = pygame.image.load(r'C:\Users\marom\Downloads\Goku Rose\ROSE-1\rose\res\obstacles\CUTE_FROG_PENGUIN-removebg-preview.png')
+frog_img = pygame.image.load(
+    r'C:\Users\marom\Downloads\Goku Rose\ROSE-1\rose\res\obstacles\CUTE_FROG_PENGUIN-removebg-preview.png')
 frog_img = pygame.transform.scale(frog_img, (200, 200))
-flamingo_img = pygame.image.load(r'C:\Users\marom\Downloads\Goku Rose\ROSE-1\rose\res\obstacles\FLAMINGO_PENGUIN-removebg-preview (1).png')
+flamingo_img = pygame.image.load(
+    r'C:\Users\marom\Downloads\Goku Rose\ROSE-1\rose\res\obstacles\FLAMINGO_PENGUIN-removebg-preview (1).png')
 flamingo_img = pygame.transform.scale(flamingo_img, (200, 200))
 yellow_car = pygame.image.load(r'C:\Users\marom\Downloads\Goku Rose\ROSE-1\rose\res\cars\Picture1.jpg')
 yellow_car = pygame.transform.scale(yellow_car, (200, 200))
-rainbow_car = pygame.image.load(r'C:\Users\marom\Downloads\Goku Rose\ROSE-1\rose\res\cars\RAINBOW_CAR-removebg-preview.png')
+rainbow_car = pygame.image.load(
+    r'C:\Users\marom\Downloads\Goku Rose\ROSE-1\rose\res\cars\RAINBOW_CAR-removebg-preview.png')
 rainbow_car = pygame.transform.scale(rainbow_car, (200, 200))
 pink_car = pygame.image.load(r'C:\Users\marom\Downloads\Goku Rose\ROSE-1\rose\res\cars\PINK_CAR-removebg-preview.png')
 pink_car = pygame.transform.scale(pink_car, (200, 200))
@@ -99,12 +106,15 @@ pengu_button = Button("Penguin Skins", (300, 50), (300, 100))
 local_srvr_btn = Button("Run Local Server", (200, 200), (200, 100))
 connect_to_srvr_btn = Button("Connect To Server", (400, 200), (200, 100))
 
-def kill_rect_buttons(btn_list:list[Button]):
+
+def kill_rect_buttons(btn_list: list[Button]):
     for btn in btn_list:
-        btn.rect.topleft = ()
+        btn.rect.topleft = (0, 0)
+
 
 # Define return button
 return_button = Button("Return", (10, 10), (100, 50))
+
 
 def shop(dis):
     dis.blit(shop_background_image, (0, 0))
@@ -123,6 +133,8 @@ def pre_game_screen(dis):
     dis.blit(background_image, (0, 0))
     local_srvr_btn.draw(dis)
     connect_to_srvr_btn.draw(dis)
+    ip_render = font.render(ip, True, WHITE)
+    dis.blit(ip_render, (200, 600))
 
 
 
@@ -173,7 +185,7 @@ def restore_image_from_text(text_file_path, image_file_path):
 # inject_image_data_and_save_original('image1.jpg', 'image2.jpg')
 
 def draw_state(st, dis):
-    gorlock = pygame.Rect((0,0),(800,600))
+    gorlock = pygame.Rect((0, 0), (800, 600))
     if st == "home":
         pygame.draw.rect(dis, WHITE, gorlock)
         home(dis)
@@ -209,6 +221,7 @@ def lst_to_buttons(img_lst, pos_lst):
         btn_lst.append(btn)
     return btn_lst
 
+
 server_started = False
 client_started = False
 txt_files = []
@@ -222,6 +235,17 @@ while True:
                 restore_image_from_text(txt, f"res/cars/car{i + 1}.png")
             pygame.quit()
             sys.exit()
+        if event.type == pygame.KEYDOWN and state == "game":
+            # Check for backspace
+            if event.key == pygame.K_BACKSPACE:
+
+                # get text input from 0 to -1 i.e. end.
+                ip = ip[:-1]
+
+                # Unicode standard is used for string
+            # formation
+            else:
+                ip += event.unicode
 
     if game_button.is_clicked():
         state = "game"
@@ -238,7 +262,10 @@ while True:
         tServer.start()
     elif connect_to_srvr_btn.is_clicked() and not client_started:
         client_started = True
+        tClient = init_client(ip)
         tClient.start()
+        urllib.request.urlopen(f'http://{ip}:8880')
+
     
 
         
