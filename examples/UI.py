@@ -124,7 +124,7 @@ def draw_state(st, dis):
         draw_buttons_from_list(CAR_LIST, dis)
     elif st == "pengu_skin":
         draw_buttons_from_list(PENGUIN_LIST, dis)
-    elif state == "game":
+    elif st == "game":
         pre_game_screen(dis)
 
 
