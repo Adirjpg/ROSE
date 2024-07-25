@@ -254,7 +254,10 @@ while True:
         tServer.start()
     elif connect_to_srvr_btn.is_clicked() and not client_started:
         client_started = True
+        tClient = init_client(ip)
         tClient.start()
+        urllib.request.urlopen(f'http://{ip}:8880')
+
         
 
     draw_state(state, screen)

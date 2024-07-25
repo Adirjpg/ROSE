@@ -34,4 +34,8 @@ def connect_to_server(ip = "127.0.0.1"):
         process = subprocess.run(cmd, shell=True, check=True, text=True)
 
 tServer = threading.Thread(target=run_local_server)
-tClient = threading.Thread(target=start_client)
+
+
+def init_client(ip = "127.0.0.7"):
+    tClient = threading.Thread(target=connect_to_server, args=ip)
+    return tClient
