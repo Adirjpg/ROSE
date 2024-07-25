@@ -170,19 +170,8 @@ while True:
         state = "car_skin"
     elif pengu_button.is_clicked():
         state = "pengu_skin"
-<<<<<<< HEAD
-    elif local_srvr_btn.is_clicked() and not server_started:
-        print("server")
-        tServer.start()
-        server_started = True
-    elif connect_to_srvr_btn.is_clicked() and not client_started:
-        print("client")
-        tClient.start()
-        client_started = True
-=======
     elif return_button.is_clicked():
         state = "home"
->>>>>>> 28d13cfcecb49a880af14067c712bdf3da399380
 
     draw_state(state, screen)
 
