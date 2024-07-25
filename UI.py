@@ -1,6 +1,5 @@
 import pygame
 import sys
-from cmdCommands import *
 
 # Initialize Pygame
 pygame.init()
@@ -35,7 +34,7 @@ CAR_LIST = [pink_car, rainbow_car, yellow_car]
 
 # Define colors
 WHITE = (255, 255, 255)
-BLUE = (0, 0, 0)
+BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 
 # Define fonts
@@ -103,10 +102,14 @@ def kill_rect_buttons(btn_list:list[Button]):
     for btn in btn_list:
         btn.rect.topleft = ()
 
+# Define return button
+return_button = Button("Return", (10, 10), (100, 50))
+
 def shop(dis):
     dis.blit(shop_background_image, (0, 0))
     car_button.draw(dis)
     pengu_button.draw(dis)
+    return_button.draw(dis)
 
 
 def home(dis):
@@ -167,6 +170,7 @@ while True:
         state = "car_skin"
     elif pengu_button.is_clicked():
         state = "pengu_skin"
+<<<<<<< HEAD
     elif local_srvr_btn.is_clicked() and not server_started:
         print("server")
         tServer.start()
@@ -175,6 +179,10 @@ while True:
         print("client")
         tClient.start()
         client_started = True
+=======
+    elif return_button.is_clicked():
+        state = "home"
+>>>>>>> 28d13cfcecb49a880af14067c712bdf3da399380
 
     draw_state(state, screen)
 
