@@ -120,15 +120,21 @@ def pre_game_screen(dis):
 
 
 def draw_state(st, dis):
+    gorlock = pygame.Rect((0,0),(800,600))
     if st == "home":
+        pygame.draw.rect(dis, WHITE, gorlock)
         home(dis)
     elif st == "shop":
+        pygame.draw.rect(dis, WHITE, gorlock)
         shop(dis)
     elif st == "car_skin":
+        pygame.draw.rect(dis, WHITE, gorlock)
         draw_buttons_from_list(CAR_LIST, dis)
     elif st == "pengu_skin":
+        pygame.draw.rect(dis, WHITE, gorlock)
         draw_buttons_from_list(PENGUIN_LIST, dis)
     elif st == "game":
+        pygame.draw.rect(dis, WHITE, gorlock)
         pre_game_screen(dis)
 
 
