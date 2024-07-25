@@ -1,6 +1,5 @@
 import pygame
 import sys
-from cmdCommands import *
 
 # Initialize Pygame
 pygame.init()
@@ -35,7 +34,7 @@ CAR_LIST = [pink_car, rainbow_car, yellow_car]
 
 # Define colors
 WHITE = (255, 255, 255)
-BLUE = (0, 0, 0)
+BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 
 # Define fonts
@@ -99,10 +98,14 @@ pengu_button = Button("Penguin Skins", (450, 50), (300, 100))
 local_srvr_btn = Button("Run Local Server", (200, 200), (200, 50))
 connect_to_srvr_btn = Button("Connect To Server", (400, 200), (200, 50))
 
+# Define return button
+return_button = Button("Return", (10, 10), (100, 50))
+
 def shop(dis):
     dis.blit(shop_background_image, (0, 0))
     car_button.draw(dis)
     pengu_button.draw(dis)
+    return_button.draw(dis)
 
 
 def home(dis):
@@ -160,6 +163,8 @@ while True:
         state = "car_skin"
     elif pengu_button.is_clicked():
         state = "pengu_skin"
+    elif return_button.is_clicked():
+        state = "home"
 
     draw_state(state, screen)
 
